@@ -1,69 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Spinner from './components/Spinner';
 import Card from './components/Card';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
 
-const arr = [
-    {
-        title: 'Мужские Кроссовки Nike Blazer Mid Suede',
-        imgUrl: '/img/sneakers/1.jpg',
-        price: 12999,
-    },
-    {
-        title: 'Мужские Кроссовки Nike Air Max 270',
-        imgUrl: '/img/sneakers/2.jpg',
-        price: 12999,
-    },
-    {
-        title: 'Мужские Кроссовки Nike Blazer Mid Suede',
-        imgUrl: '/img/sneakers/3.jpg',
-        price: 8499,
-    },
-    {
-        title: 'Кроссовки Puma X Aka Boku Future Rider',
-        imgUrl: '/img/sneakers/4.jpg',
-        price: 8999,
-    },
-    {
-        title: 'Мужские Кроссовки Under Armour Curry 8',
-        imgUrl: '/img/sneakers/5.jpg',
-        price: 15199,
-    },
-    {
-        title: 'Мужские Кроссовки Nike Kyrie 7',
-        imgUrl: '/img/sneakers/6.jpg',
-        price: 11299,
-    },
-    {
-        title: 'Мужские Кроссовки Jordan Air Jordan 11',
-        imgUrl: '/img/sneakers/7.jpg',
-        price: 10799,
-    },
-    {
-        title: 'Мужские Кроссовки Nike LeBron XVIII',
-        imgUrl: '/img/sneakers/8.jpg',
-        price: 16499,
-    },
-];
-
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
+    const [search, setSearch] = useState('');
+    const [items, setItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+
+    useEffect(() => {
+        request();
+    }, []);
+
+    async function request() {
+        await fetch('https://6184d56923a2fe0017fff213.mockapi.io/items')
+            .then(res => res.json())
+            .then(json => setItems(json))
+            .catch(error => console.log(error));
+    }
+
+    function onAddToCart(obj) {
+        setCartItems(state => [...state, obj]);
+        console.log(cartItems);
+    }
+
+    function searchItems(e) {
+        setSearch(e.target.value);
+    }
+
+    const loading = items.length === 0 ? <Spinner /> : null;
 
     return (
         <div className='wrapper clear'>
-            {cartOpen && <Drawer onCloseCart={() => setCartOpen(false)} />}
+            {cartOpen && (
+                <Drawer
+                    onCloseCart={() => setCartOpen(false)}
+                    cartItems={cartItems}
+                />
+            )}
             <Header
                 onClickCart={() => {
                     setCartOpen(true);
-                    console.log(cartOpen);
                 }}
             />
             <div className='content p-40'>
-                <h1 className='mb-40'>Все кроссовки</h1>
+                <div className='d-flex align-center justify-between mb-40'>
+                    <h1 className='mb-40'>Все кроссовки</h1>
+                    <div className='search-block d-flex'>
+                        <img src='/img/search.svg' alt='Search' />
+                        {search && (
+                            <img
+                                className='clear cu-p'
+                                src='/img/btn-remove.svg'
+                                alt='Clear'
+                                onClick={() => setSearch('')}
+                            />
+                        )}
+                        <input
+                            placeholder='Поиск...'
+                            onChange={searchItems}
+                            value={search}
+                        />
+                    </div>
+                </div>
                 <div className='d-flex flex-wrap'>
-                    {arr.map(item => (
-                        <Card data={item} />
-                    ))}
+                    {loading}
+                    {items
+                        .filter(item =>
+                            item.title
+                                .toLowerCase()
+                                .includes(search.toLowerCase())
+                        )
+                        .map((item, index) => (
+                            <Card
+                                data={item}
+                                onAddToCart={onAddToCart}
+                                key={index}
+                            />
+                        ))}
                 </div>
             </div>
         </div>
