@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import Spinner from './components/Spinner';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
 import Home from './pages/Home';
@@ -13,34 +12,49 @@ function App() {
     const [items, setItems] = useState([]); // все кроссовки
     const [cartItems, setCartItems] = useState([]); // корзина, массив
     const [favorite, setFavorite] = useState([]); // фавориты, массив
+    const [isLoading, setIsLoading] = useState(true); // загрузка товаров
 
     useEffect(() => {
-        getAllSneakers();
-        getFavoriteSneakers();
-        getCartSneakers();
+        async function fetchData() {
+            const favoriteResponse = await axios.get(
+                'https://6184d56923a2fe0017fff213.mockapi.io/favorite'
+            );
+            const cartResponse = await axios.get(
+                'https://6184d56923a2fe0017fff213.mockapi.io/cart'
+            );
+            const itemsResponse = await axios.get(
+                'https://6184d56923a2fe0017fff213.mockapi.io/items'
+            );
+
+            setIsLoading(false);
+
+            setFavorite(favoriteResponse.data);
+            setCartItems(cartResponse.data);
+            setItems(itemsResponse.data);
+        }
+
+        fetchData();
     }, []);
 
-    const getAllSneakers = () => {
-        axios
-            .get('https://6184d56923a2fe0017fff213.mockapi.io/items')
-            .then(res => setItems(res.data));
-    };
-
-    const getFavoriteSneakers = () => {
-        axios
-            .get('https://6184d56923a2fe0017fff213.mockapi.io/favorite')
-            .then(res => setFavorite(res.data));
-    };
-
-    const getCartSneakers = () => {
-        axios
-            .get('https://6184d56923a2fe0017fff213.mockapi.io/cart')
-            .then(res => setCartItems(res.data));
-    };
-
     const onAddToCart = obj => {
-        axios.post('https://6184d56923a2fe0017fff213.mockapi.io/cart', obj);
-        setCartItems(state => [...state, obj]);
+        try {
+            if (cartItems.find(item => Number(item.id) === Number(obj.id))) {
+                axios.delete(
+                    `https://6184d56923a2fe0017fff213.mockapi.io/cart/${obj.id}`
+                );
+                setCartItems(prev =>
+                    prev.filter(item => Number(item.id) !== Number(obj.id))
+                );
+            } else {
+                axios.post(
+                    'https://6184d56923a2fe0017fff213.mockapi.io/cart',
+                    obj
+                );
+                setCartItems(state => [...state, obj]);
+            }
+        } catch (error) {
+            alert('Не получилось добавить товар');
+        }
     };
 
     const searchItems = e => {
@@ -70,8 +84,6 @@ function App() {
         setCartItems(prev => prev.filter(item => item.id !== id));
     };
 
-    const loading = items.length === 0 ? <Spinner /> : null;
-
     return (
         <Router>
             <div className='wrapper clear'>
@@ -93,10 +105,11 @@ function App() {
                         path='/'
                         element={
                             <Home
+                                isLoading={isLoading}
+                                cartItems={cartItems}
                                 search={search}
                                 setSearch={setSearch}
                                 searchItems={searchItems}
-                                loading={loading}
                                 onAddToCart={onAddToCart}
                                 onAddToFavorite={onAddToFavorite}
                                 items={items}
