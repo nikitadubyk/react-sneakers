@@ -20,9 +20,6 @@ const Home = ({
                     cartItems={cartItems}
                     onAddToCart={obj => onAddToCart(obj)}
                     onAddToFavorite={obj => onAddToFavorite(obj)}
-                    added={cartItems.some(
-                        obj => Number(obj.id) === Number(item.id)
-                    )}
                     loading={isLoading}
                     key={index}
                     {...item}
