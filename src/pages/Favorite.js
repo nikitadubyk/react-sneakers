@@ -3,8 +3,8 @@ import Card from '../components/Card';
 import { Link } from 'react-router-dom';
 import AppContext from '../components/context';
 
-const Favorite = ({ onAddToFavorite, onAddToCart }) => {
-    const { favorite } = useContext(AppContext);
+const Favorite = () => {
+    const { favorite, onAddToFavorite, onAddToCart } = useContext(AppContext);
     return (
         <div className='content p-40'>
             <div className='d-flex align-center mb-40'>
