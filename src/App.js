@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Drawer from './components/Drawer';
 import Home from './pages/Home';
 import Favorite from './pages/Favorite';
+import Orders from './pages/Orders';
 
 function App() {
     const [cartOpen, setCartOpen] = useState(false); // открыта/закрыта корзина
@@ -18,23 +19,29 @@ function App() {
     const [isLoading, setIsLoading] = useState(true); // загрузка товаров
 
     useEffect(() => {
-        // TODO: add promise all
         async function fetchData() {
-            const favoriteResponse = await axios.get(
-                'https://6184d56923a2fe0017fff213.mockapi.io/favorite'
-            );
-            const cartResponse = await axios.get(
-                'https://6184d56923a2fe0017fff213.mockapi.io/cart'
-            );
-            const itemsResponse = await axios.get(
-                'https://6184d56923a2fe0017fff213.mockapi.io/items'
-            );
+            try {
+                const [favoriteResponse, cartResponse, itemsResponse] =
+                    await Promise.all([
+                        axios.get(
+                            'https://6184d56923a2fe0017fff213.mockapi.io/favorite'
+                        ),
+                        axios.get(
+                            'https://6184d56923a2fe0017fff213.mockapi.io/cart'
+                        ),
+                        axios.get(
+                            'https://6184d56923a2fe0017fff213.mockapi.io/items'
+                        ),
+                    ]);
+                setIsLoading(false);
 
-            setIsLoading(false);
-
-            setFavorite(favoriteResponse.data);
-            setCartItems(cartResponse.data);
-            setItems(itemsResponse.data);
+                setFavorite(favoriteResponse.data);
+                setCartItems(cartResponse.data);
+                setItems(itemsResponse.data);
+            } catch (e) {
+                alert('Произошла ошибка при получении данных');
+                console.log(e);
+            }
         }
 
         fetchData();
@@ -54,7 +61,7 @@ function App() {
                     'https://6184d56923a2fe0017fff213.mockapi.io/cart',
                     obj
                 );
-                setCartItems(state => [...state, obj]);
+                setCartItems(prev => [...prev, obj]);
             }
         } catch (error) {
             alert('Не получилось добавить товар');
@@ -91,6 +98,10 @@ function App() {
         setCartItems(prev => prev.filter(item => item.id !== id));
     };
 
+    const onCloseCart = () => {
+        setCartOpen(false);
+    };
+
     const isItemAdded = id => {
         return cartItems.some(obj => Number(obj.id) === Number(id));
     };
@@ -100,21 +111,17 @@ function App() {
             value={{
                 items,
                 cartItems,
+                setCartItems,
                 favorite,
                 isItemAdded,
                 onAddToFavorite,
                 onAddToCart,
+                onCloseCart,
             }}
         >
             <Router>
                 <div className='wrapper clear'>
-                    {cartOpen && (
-                        <Drawer
-                            onCloseCart={() => setCartOpen(false)}
-                            cartItems={cartItems}
-                            onRemove={onRemoveItem}
-                        />
-                    )}
+                    {cartOpen && <Drawer onRemove={onRemoveItem} />}
                     <Header
                         onClickCart={() => {
                             setCartOpen(true);
@@ -138,6 +145,7 @@ function App() {
                             }
                         />
                         <Route exact path='/favorite' element={<Favorite />} />
+                        <Route exect path='/orders' element={<Orders />} />
                     </Routes>
                 </div>
             </Router>

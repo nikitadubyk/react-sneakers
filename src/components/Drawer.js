@@ -1,4 +1,40 @@
-function Drawer({ onCloseCart, cartItems = [], onRemove }) {
+import axios from 'axios';
+import { useContext, useState } from 'react';
+import AppContext from './context';
+import Info from './Info';
+
+function Drawer({ onRemove }) {
+    const [isOrderComplite, setIsOrderComplite] = useState(false);
+    const [orderId, setOrderId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const { onCloseCart, cartItems, setCartItems } = useContext(AppContext);
+
+    const sendOrder = async () => {
+        try {
+            setIsLoading(true);
+            const { data } = await axios.post(
+                'https://6184d56923a2fe0017fff213.mockapi.io/orders',
+                {
+                    items: cartItems,
+                }
+            );
+            setIsOrderComplite(true);
+            setOrderId(data.orderId);
+            setCartItems([]);
+
+            for (let i = 0; i < cartItems.length; i++) {
+                const item = cartItems[i];
+                await axios.delete(
+                    `https://6184d56923a2fe0017fff213.mockapi.io/cart/${item.id}`
+                );
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        setIsLoading(false);
+    };
+
     return (
         <div className='overlay'>
             <div className='drawer'>
@@ -13,7 +49,7 @@ function Drawer({ onCloseCart, cartItems = [], onRemove }) {
                 </h2>
 
                 {cartItems.length > 0 ? (
-                    <div>
+                    <div className='d-flex flex-column'>
                         <div className='items'>
                             {cartItems.map((items, index) => (
                                 <div
@@ -54,31 +90,34 @@ function Drawer({ onCloseCart, cartItems = [], onRemove }) {
                                     <b>1074 руб. </b>
                                 </li>
                             </ul>
-                            <button className='greenButton'>
+                            <button
+                                className='greenButton'
+                                disabled={isLoading}
+                                onClick={sendOrder}
+                            >
                                 Оформить заказ{' '}
                                 <img src='/img/arrow.svg' alt='Arrow' />
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div className='cartEmpty d-flex align-center justify-center flex-column flex'>
-                        <img
-                            className='mb-20'
-                            width='120px'
-                            height='120px'
-                            src='/img/empty-cart.jpg'
-                            alt='Empty'
-                        />
-                        <h2>Корзина пустая</h2>
-                        <p className='opacity-6'>
-                            Добавьте хотя бы одну пару кроссовок, чтобы сделать
-                            заказ.
-                        </p>
-                        <button onClick={onCloseCart} className='greenButton'>
-                            <img src='/img/arrow.svg' alt='Arrow' />
-                            Вернуться назад
-                        </button>
-                    </div>
+                    <Info
+                        title={
+                            isOrderComplite
+                                ? 'Заказ оформлен!'
+                                : 'Корзина пустая'
+                        }
+                        description={
+                            isOrderComplite
+                                ? `Ваш заказ #${orderId} скоро будет передан курьерской доставке`
+                                : 'Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ'
+                        }
+                        imgUrl={
+                            isOrderComplite
+                                ? '/img/order-complete.jpg'
+                                : '/img/empty-cart.jpg'
+                        }
+                    />
                 )}
             </div>
         </div>

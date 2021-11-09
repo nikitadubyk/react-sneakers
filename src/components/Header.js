@@ -37,14 +37,14 @@ const Header = ({ onClickCart }) => {
                         />
                     </li>
                 </Link>
-                <li>
+                <Link to='/orders'>
                     <img
                         width={18}
                         height={18}
                         src='/img/user.svg'
                         alt='user'
                     />
-                </li>
+                </Link>
             </ul>
         </header>
     );

@@ -50,6 +50,7 @@ const Card = ({
                             <b>{`${price} руб.`}</b>
                         </div>
                         <img
+                            className={styles.plus}
                             onClick={onClickPlus}
                             src={
                                 isItemAdded(id)
