@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useCart } from '../../hooks/useCart';
 import AppContext from '../context';
 import styles from './Drawer.module.scss';
@@ -12,6 +12,11 @@ function Drawer({ onRemove, cartOpen }) {
 
     const { totalPrice } = useCart();
     const { onCloseCart, cartItems, setCartItems } = useContext(AppContext);
+
+    useEffect(() => {
+        const body = document.querySelector('body');
+        body.style.overflow = cartOpen ? 'hidden' : '';
+    }, [cartOpen]);
 
     const sendOrder = async () => {
         try {
