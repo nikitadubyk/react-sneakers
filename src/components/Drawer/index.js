@@ -1,13 +1,16 @@
 import axios from 'axios';
 import { useContext, useState } from 'react';
-import AppContext from './context';
-import Info from './Info';
+import { useCart } from '../../hooks/useCart';
+import AppContext from '../context';
+import styles from './Drawer.module.scss';
+import Info from '../Info';
 
-function Drawer({ onRemove }) {
+function Drawer({ onRemove, cartOpen }) {
     const [isOrderComplite, setIsOrderComplite] = useState(false);
     const [orderId, setOrderId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { totalPrice } = useCart();
     const { onCloseCart, cartItems, setCartItems } = useContext(AppContext);
 
     const sendOrder = async () => {
@@ -36,8 +39,12 @@ function Drawer({ onRemove }) {
     };
 
     return (
-        <div className='overlay'>
-            <div className='drawer'>
+        <div
+            className={`${styles.overlay} ${
+                cartOpen ? styles.overlayVisible : ''
+            }`}
+        >
+            <div className={styles.drawer}>
                 <h2 className='d-flex justify-between mb-30'>
                     Корзина{' '}
                     <img
@@ -49,8 +56,8 @@ function Drawer({ onRemove }) {
                 </h2>
 
                 {cartItems.length > 0 ? (
-                    <div className='d-flex flex-column'>
-                        <div className='items'>
+                    <div className='d-flex flex-column flex'>
+                        <div className='items flex'>
                             {cartItems.map((items, index) => (
                                 <div
                                     className='cartItem d-flex align-center mb-20'
@@ -82,12 +89,12 @@ function Drawer({ onRemove }) {
                                 <li>
                                     <span>Итого:</span>
                                     <div></div>
-                                    <b>21 498 руб. </b>
+                                    <b>{totalPrice} руб. </b>
                                 </li>
                                 <li>
                                     <span>Налог 5%:</span>
                                     <div></div>
-                                    <b>1074 руб. </b>
+                                    <b>{Math.round(totalPrice * 0.05)} руб. </b>
                                 </li>
                             </ul>
                             <button

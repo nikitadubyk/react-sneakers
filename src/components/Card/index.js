@@ -4,6 +4,7 @@ import ContentLoader from 'react-content-loader';
 import styles from './Card.module.scss';
 
 const Card = ({
+    parentId,
     title,
     imgUrl,
     price,
@@ -15,14 +16,15 @@ const Card = ({
 }) => {
     const { isItemAdded } = useContext(AppContext);
     const [isFavorite, setIsFavorite] = useState(favorited);
+    const obj = { id, parentId: id, title, imgUrl, price };
 
     const onClickFavorite = () => {
-        onAddToFavorite({ id, title, imgUrl, price });
+        onAddToFavorite(obj);
         setIsFavorite(!isFavorite);
     };
 
     const onClickPlus = () => {
-        onAddToCart({ id, title, imgUrl, price });
+        onAddToCart(obj);
     };
 
     return (
