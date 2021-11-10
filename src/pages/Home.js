@@ -1,4 +1,5 @@
 import Card from '../components/Card';
+import { Helmet } from 'react-helmet';
 
 const Home = ({
     isLoading,
@@ -30,6 +31,13 @@ const Home = ({
 
     return (
         <div className='content p-40'>
+            <Helmet>
+                <title>Магазин кроссовок "React Sneakers"</title>
+                <meta
+                    name='description'
+                    content='Магазин кроссовок "React Sneakers"'
+                />
+            </Helmet>
             <div className='d-flex align-center justify-between mb-40'>
                 <h1 className='mb-40'>
                     {search ? `Поиск по запросу "${search}"` : 'Все кроссовки'}

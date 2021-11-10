@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { Helmet } from 'react-helmet';
 import Card from '../components/Card';
 import { Link } from 'react-router-dom';
 import AppContext from '../components/context';
@@ -8,6 +9,10 @@ const Favorite = () => {
     const { favorite, onAddToFavorite, onAddToCart } = useContext(AppContext);
     return (
         <div className='content p-40'>
+            <Helmet>
+                <title>Закладки</title>
+                <meta name='description' content='Закладки' />
+            </Helmet>
             <div className='d-flex align-center mb-40'>
                 <Link to='/'>
                     <img

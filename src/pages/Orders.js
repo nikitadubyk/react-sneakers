@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
+import { Helmet } from 'react-helmet';
 import Card from '../components/Card';
 import AppContext from '../components/context';
 
@@ -30,6 +31,10 @@ const Orders = () => {
 
     return (
         <div className='content p-40'>
+            <Helmet>
+                <title>Мои заказы</title>
+                <meta name='description' content='Мои заказы' />
+            </Helmet>
             <div className='d-flex align-center justify-between mb-40'>
                 <h1>Мои заказы</h1>
             </div>
