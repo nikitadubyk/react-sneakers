@@ -64,7 +64,7 @@ function App() {
             } else {
                 setCartItems(prev => [...prev, obj]);
                 const { data } = await axios.post(
-                    'https://60d62397943aa60017768e77.mockapi.io/cart',
+                    'https://6184d56923a2fe0017fff213.mockapi.io/cart',
                     obj
                 );
                 setCartItems(prev =>
