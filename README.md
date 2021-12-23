@@ -1,17 +1,22 @@
 # Sneakers shop
+
+![](https://github.com/nikitadubyk/marvel/blob/main/readme-image.gif)
+
 You can view the application here: https://react-sneakers-test.herokuapp.com/
 
 ## Key features
-- Responsive design
-- Cart operation, removal and addition of goods
-- Saving the completed order
-- Correct loading of the cart and display of the added product
+
+-   Responsive design
+-   Cart operation, removal and addition of goods
+-   Saving the completed order
+-   Correct loading of the cart and display of the added product
 
 ## Technologies used in this project
-- Axios
-- React JS
-- React Router
-- React hooks
-- React context
-- Mockapi
-- SCSS
+
+-   Axios
+-   React JS
+-   React Router
+-   React hooks
+-   React context
+-   Mockapi
+-   SCSS
